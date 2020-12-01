@@ -1,3 +1,3 @@
-# RN-Project-02
+# RESTAURANT-APP-MAP
 
-Restaurant App-Map
+React Native Project-6
