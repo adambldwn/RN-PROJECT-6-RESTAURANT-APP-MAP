@@ -1,10 +1,22 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import MapView from 'react-native-maps';
-import { SafeAreaView, View, Text } from 'react-native';
+import axios from 'axios';
+import { SafeAreaView, View, FlatList, Text } from 'react-native';
 
 import { City, RestaurantDetail, SearchBar } from './components';
 
 const Main = (props) => {
+  const [cityList, setCityList] =useState([]);
+
+  const fetchCities = async ()=>{
+    const {data} = await axios.get("https://opentable.herokuapp.com/api/cities");
+    setCityList(data.cities);
+  };
+
+  useEffect(()=>{
+    fetchCities();
+  },[])
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -20,6 +32,12 @@ const Main = (props) => {
         />
         <View style={{position: 'absolute'}}>
           <SearchBar/>
+          <FlatList
+            horizontal
+            keyExtractor={(_,index)=> index.toString()}
+            data={cityList}
+            renderItem={({item}) => <City cityName={item}/>}
+          />
         </View>
         
       </View>
