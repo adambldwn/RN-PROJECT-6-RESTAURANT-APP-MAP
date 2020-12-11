@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import MapView, {Marker} from 'react-native-maps';
 import axios from 'axios';
 import { SafeAreaView, View, FlatList, Text } from 'react-native';
@@ -10,6 +10,7 @@ let originalList = [];
 const Main = (props) => {
   const [cityList, setCityList] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
+  const mapRef = useRef(null);
 
   const fetchCities = async () => {
     const { data } = await axios.get("https://opentable.herokuapp.com/api/cities");
@@ -31,9 +32,19 @@ const Main = (props) => {
     setCityList(filteredList)
   }
 
+  const restaurantsCoordinates = restaurants.map(res => {
+    return({
+        latitude: res.lat,
+        longitude: res.lng,
+    });
+  });
+
   const onCitySelect = async (city) => {
     const { data: { restaurants } } = await axios.get("https://opentable.herokuapp.com/api/restaurants?city=" + city)
     setRestaurants(restaurants);
+
+    mapRef.current.fitToCoordinates(restaurantsCoordinates);
+
   }
 
   return (
@@ -41,6 +52,7 @@ const Main = (props) => {
       <View style={{ flex: 1 }}>
 
         <MapView
+          ref={mapRef}
           style={{ flex: 1 }}
           initialRegion={{
             latitude: 37.78825,
