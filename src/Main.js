@@ -11,6 +11,7 @@ const Main = (props) => {
   const [cityList, setCityList] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const mapRef = useRef(null);
+  const [modalFlag, setModalFlag] = useState(false);
 
   const fetchCities = async () => {
     const { data } = await axios.get("https://opentable.herokuapp.com/api/cities");
@@ -43,8 +44,14 @@ const Main = (props) => {
     const { data: { restaurants } } = await axios.get("https://opentable.herokuapp.com/api/restaurants?city=" + city)
     setRestaurants(restaurants);
 
-    mapRef.current.fitToCoordinates(restaurantsCoordinates);
-
+    mapRef.current.fitToCoordinates(restaurantsCoordinates, {
+      edgePadding: {
+        top: 25,
+        right: 25,
+        bottom: 25,
+        left: 25
+      }
+    });
   }
 
   return (
@@ -84,6 +91,10 @@ const Main = (props) => {
             renderItem={({ item }) => <City cityName={item} onSelect={() => onCitySelect(item)} />}
           />
         </View>
+
+        <RestaurantDetail
+          isVisible={modalFlag}
+        />
 
       </View>
     </SafeAreaView>
